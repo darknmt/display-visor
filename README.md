@@ -1,6 +1,15 @@
 display-visor
 ==================
 
+
+Personal changes
+------------
+- Update $lidstatus after each message from pkill.
+- Use absolute directory of pkill in udev rules.
+
+
+
+
 i3 does not manage displays and I move my laptop around a lot. This little script fills a much needed gap in my tiling window manager setup.
 
 How it works

@@ -1,1 +1,1 @@
-ACTION=="change", SUBSYSTEM=="drm", ENV{HOTPLUG}=="1", RUN+="pkill -RTMIN+5 display-visor"
+KERNEL=="card0", SUBSYSTEM=="drm", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/home/darknmt/.Xauthority", RUN+="/usr/bin/pkill -x -RTMIN+5 display-visor"

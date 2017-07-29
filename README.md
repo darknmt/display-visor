@@ -9,7 +9,7 @@ Personal changes
 
 
 
-
+------------
 i3 does not manage displays and I move my laptop around a lot. This little script fills a much needed gap in my tiling window manager setup.
 
 How it works

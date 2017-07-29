@@ -6,6 +6,7 @@ Personal changes
 ------------
 - Update $lidstatus after each message from pkill.
 - Use absolute directory of pkill in udev rules.
+- Replace LVDS1 by eDP1
 
 
 

@@ -8,7 +8,18 @@ Personal changes
 - Use absolute directory of pkill in udev rules.
 - Replace LVDS1 by eDP1
 
+Setup
+------------
 
+
+Add to .i3/config
+
+	exec --no-startup-id display-visor -f -l
+	exec 'sudo /etc/init.d/acpi restart'
+
+Copy /data/acpid to /etc/acpi/events
+
+Copy /data/udev to /etc/udev/rules.d
 
 ------------
 i3 does not manage displays and I move my laptop around a lot. This little script fills a much needed gap in my tiling window manager setup.

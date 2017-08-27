@@ -171,6 +171,7 @@ configure_displays ()
 
     declare_outputs
     lidstatus=$(cat /proc/acpi/button/lid/$lidswitch/state 2>/dev/null | awk '{print $NF}')
+    
     if [ -z "$lidstatus" -o "$lidstatus" == "closed" ]; then
         config_closed_lid
     elif [ "$lidstatus" == "open" ]; then

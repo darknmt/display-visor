@@ -1,2 +1,2 @@
 event=button/lid.*
-action=pkill -x -RTMIN+5 display-visor
+action=/usr/bin/pkill -x -RTMIN+5 display-visor

@@ -74,10 +74,10 @@ handle_err ()
     fi
 
     # Test for valid laptop lid status.
-    if [ "$lidtest" == "true" -a -z "$lidstatus" ]; then
-        echo "$prefix Laptop lid switch $lidswitch not found. Exiting..."
-        exit 1
-    fi
+    # if [ "$lidtest" == "true" -a -z "$lidstatus" ]; then
+    #    echo "$prefix Laptop lid switch $lidswitch not found. Exiting..."
+    #    exit 1
+    # fi
 }
 
 ## Declare Output Devices
@@ -105,31 +105,37 @@ declare_outputs ()
 ## Configure monitors for closed lid
 config_closed_lid ()
 {
-    if [ "$lidstatus" == "closed" ]; then
+    #if [ "$lidstatus" == "closed" ]; then
         echo "$prefix Laptop lid is closed"
-    elif [ -n "$eDP1" -a -z "$lidtest" ]; then
-        echo "$prefix Laptop display will be ignored unless -l option is set"
-    fi
+	notify-send "display-visor" "Laptop lid is closed"
+    #elif [ -n "$eDP1" -a -z "$lidtest" ]; then
+    #    echo "$prefix Laptop display will be ignored unless -l option is set"
+    #fi
     if [ -n "$HDMI1" -a -n "$VGA1" ]; then
         echo "$prefix SETTING: HDMI1 (Primary) - VGA1 (Right)"
         xrandr --output eDP1 --off \
                --output HDMI1 --auto --primary \
                --output VGA1 --auto --right-of HDMI1
+        notify-send "display-visor" "SETTING: HDMI1 (Primary) - VGA1 (Right)"
     elif [ -n "$HDMI1" -a -z "$VGA1" ]; then
         echo "$prefix SETTING: HDMI1 (Primary)"
         xrandr --output eDP1 --off \
-               --output VGA1 --off \
                --output HDMI1 --auto --primary
+        notify-send "display-visor" "SETTING: HDMI1 (Primary)"
     elif [ -z "$HDMI1" -a -n "$VGA1" ]; then
         echo "$prefix SETTING: VGA1 (Primary)"
         xrandr --output eDP1 --off \
-               --output HDMI1 --off \
                --output VGA1 --auto --primary
+        notify-send "display-visor" "SETTING: VGA1 (Primary)"
+    elif [ -n "$DP1" ]; then
+        echo "$prefix SETTING: DP1 (Primary)"
+        xrandr --output eDP1 --off \
+               --output DP1 --auto --primary
+        notify-send "display-visor" "SETTING: DP1 (Primary)"
     else
         echo "$prefix No external monitors are plugged in"
-        xrandr --output HDMI1 --off \
-               --output VGA1 --off \
-               --output eDP1 --auto --primary
+        xrandr --output eDP1 --auto --primary
+        notify-send "display-visor" "No external monitors are plugged in"
     fi
 }
 
@@ -141,26 +147,36 @@ config_open_lid ()
 	##Never use
         echo "$prefix HDMI1 and VGA1 are plugged in."
         echo "$prefix SETTING: eDP1 (Left) - HDMI1 (Primary) - VGA1 (Right)"
-        xrandr --output eDP1 --off \
+        xrandr --output eDP1 --left-of HDMI1 \
                --output HDMI1 --auto --primary \
                --output VGA1 --auto --right-of HDMI1
+        notify-send "display-visor" "HDMI1 and VGA1 are plugged in."
+        notify-send "display-visor" "SETTING: eDP1 (Left) - HDMI1 (Primary) - VGA1 (Right)"
     elif [ -n "$HDMI1" -a -z "$VGA1" ]; then
         echo "$prefix HDMI1 is plugged in, but not VGA1."
-        echo "$prefix SETTING: eDP1 (Primary) - HDMI1 (Top)"
-        xrandr --output VGA1 --off \
-               --output eDP1 --auto --primary \
-               --output HDMI1 --auto --above eDP1 --noprimary
+        echo "$prefix SETTING: HDMI1 (Left) - eDP1 (Primary)"
+        xrandr --output eDP1 --auto --primary \
+               --output HDMI1 --auto --left-of eDP1
+        notify-send "display-visor" "HDMI1 is plugged in, but not VGA1."
+        notify-send "display-visor" "SETTING: HDMI1 (Left) - eDP1 (Primary)"
     elif [ -z "$HDMI1" -a -n "$VGA1" ]; then
         echo "$prefix VGA1 is plugged in, but not HDMI1"
-        echo "$prefix SETTING: eDP1 (Primary) - VGA1 (Top)"
-        xrandr --output HDMI1 --off \
-               --output eDP1 --auto --primary \
-               --output VGA1 --auto --above eDP1 --noprimary
+        echo "$prefix SETTING: VGA1 (Left) - eDP1 (Primary)"
+        xrandr --output eDP1 --auto --primary \
+               --output VGA1 --auto --left-of eDP1
+        notify-send "display-visor" "VGA1 is plugged in, but not HDMI1"
+        notify-send "display-visor" "SETTING: VGA1 (Left) - eDP1 (Primary)"
+    elif [ -n "$DP1" ]; then
+        echo "$prefix DP1 is plugged in"
+        echo "$prefix SETTING: DP1 (Left) - eDP1 (Primary)"
+        xrandr --output eDP1 --auto --primary \
+               --output DP1 --auto --left-of eDP1
+        notify-send "display-visor" "DP1 is plugged in"
+        notify-send "display-visor" "SETTING: DP1 (Left) - eDP1 (Primary)"
     else
         echo "$prefix No external monitors are plugged in"
-        xrandr --output HDMI1 --off \
-               --output VGA1 --off \
-               --output eDP1 --auto --primary
+        xrandr --output eDP1 --auto --primary
+        notify-send "display-visor" "No external monitors are plugged in"
     fi
 }
 
@@ -170,9 +186,9 @@ configure_displays ()
     handle_err
 
     declare_outputs
-    lidstatus=$(cat /proc/acpi/button/lid/$lidswitch/state 2>/dev/null | awk '{print $NF}')
+    lidstatus=$(cat /proc/acpi/button/lid/LID/state 2>/dev/null | awk '{print $NF}')
     
-    if [ -z "$lidstatus" -o "$lidstatus" == "closed" ]; then
+    if [ "$lidstatus" == "closed" ]; then
         config_closed_lid
     elif [ "$lidstatus" == "open" ]; then
         config_open_lid
